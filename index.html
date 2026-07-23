@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Details — Enrollment Form</title>
+<style>
+  :root{
+    --ink:#1c2321;
+    --paper:#f6f5f1;
+    --card:#ffffff;
+    --line:#dcd8cd;
+    --accent:#2f5d50;      /* deep pine green — campus/ledger feel */
+    --accent-soft:#e6efec;
+    --gold:#b8863a;        /* brass accent for the "stamp" motif */
+    --error:#a4342a;
+    --radius:10px;
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px);
+    background-size: 100% 2.1em;
+    color:var(--ink);
+    min-height:100vh;
+    padding:40px 16px 80px;
+  }
+
+  .sheet{
+    max-width:760px;
+    margin:0 auto;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:0 1px 3px rgba(28,35,33,0.06), 0 10px 30px rgba(28,35,33,0.05);
+    overflow:hidden;
+    position:relative;
+  }
+
+  .letterhead{
+    padding:32px 40px 24px;
+    border-bottom:2px solid var(--accent);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+  }
+  .letterhead h1{
+    font-family:"Trajan Pro","Cinzel","Times New Roman",serif;
+    font-size:1.6rem;
+    letter-spacing:0.03em;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .letterhead p{
+    margin:0;
+    font-size:0.92rem;
+    color:#5a5f5a;
+    font-style:italic;
+  }
+  .stamp{
+    flex-shrink:0;
+    width:64px;height:64px;
+    border:2px solid var(--gold);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    transform:rotate(-8deg);
+    font-family:"Trajan Pro","Cinzel",serif;
+    font-size:0.62rem;
+    letter-spacing:0.05em;
+    color:var(--gold);
+    text-align:center;
+    line-height:1.15;
+    padding:4px;
+  }
+
+  form{padding:28px 40px 40px;}
+
+  fieldset{
+    border:none;
+    border-top:1px dashed var(--line);
+    padding:22px 0 6px;
+    margin:0;
+  }
+  fieldset:first-of-type{border-top:none; padding-top:0;}
+
+  legend{
+    font-family:"Trajan Pro","Cinzel",serif;
+    font-size:0.78rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    padding:0;
+    margin-bottom:14px;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .row.full{grid-template-columns:1fr;}
+  .row.three{grid-template-columns:1fr 1fr 1fr;}
+
+  label{
+    display:block;
+    font-size:0.82rem;
+    color:#4a4f4a;
+    margin-bottom:5px;
+    letter-spacing:0.01em;
+  }
+  label .req{color:var(--error);}
+
+  .field{margin-bottom:16px;}
+
+  input, select, textarea{
+    width:100%;
+    font-family:inherit;
+    font-size:0.98rem;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fdfdfb;
+    color:var(--ink);
+    transition:border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  textarea{resize:vertical; min-height:64px;}
+
+  .error-text{
+    color:var(--error);
+    font-size:0.8rem;
+    margin-top:-12px;
+    margin-bottom:14px;
+    display:none;
+  }
+  .error-text.show{display:block;}
+
+  button[type="submit"]{
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-family:inherit;
+    font-size:1rem;
+    letter-spacing:0.03em;
+    cursor:pointer;
+    transition:background 0.15s;
+  }
+  button[type="submit"]:hover{background:#254a3f;}
+  button[type="submit"]:disabled{background:#9aa39d; cursor:not-allowed;}
+
+  .banner{
+    margin:0 40px 20px;
+    padding:14px 16px;
+    border-radius:8px;
+    font-size:0.92rem;
+    display:none;
+  }
+  .banner.show{display:block;}
+  .banner.success{background:#e6efec; color:#1e4638; border:1px solid #b6d4c6;}
+  .banner.error{background:#f7e9e7; color:var(--error); border:1px solid #e3bdb6;}
+
+  @media (max-width:560px){
+    .row, .row.three{grid-template-columns:1fr;}
+    .letterhead{flex-direction:column;}
+    form{padding:24px 22px 32px;}
+    .letterhead{padding:24px 22px 20px;}
+    .banner{margin:0 22px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="letterhead">
+    <div>
+      <h1>Student Enrollment Form</h1>
+      <p>Official student registration &middot; Academic Year 2026–27</p>
+    </div>
+    <div class="stamp">OFFICIAL<br>RECORD</div>
+  </div>
+
+  <div id="banner" class="banner"></div>
+
+  <form id="studentForm" novalidate>
+
+    <fieldset>
+      <legend>Identification</legend>
+      <div class="row">
+        <div class="field">
+          <label for="roll_number">Roll Number <span class="req">*</span></label>
+          <input type="text" id="roll_number" name="roll_number" required>
+        </div>
+        <div class="field">
+          <label for="full_name">Full Name <span class="req">*</span></label>
+          <input type="text" id="full_name" name="full_name" required>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Personal Details</legend>
+      <div class="row three">
+        <div class="field">
+          <label for="date_of_birth">Date of Birth <span class="req">*</span></label>
+          <input type="date" id="date_of_birth" name="date_of_birth" required>
+        </div>
+        <div class="field">
+          <label for="gender">Gender <span class="req">*</span></label>
+          <select id="gender" name="gender" required>
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="blood_group">Blood Group</label>
+          <select id="blood_group" name="blood_group">
+            <option value="">Select (optional)</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="nationality">Nationality <span class="req">*</span></label>
+          <input type="text" id="nationality" name="nationality" value="Indian" required>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Contact Details</legend>
+      <div class="row">
+        <div class="field">
+          <label for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" maxlength="10" placeholder="10-digit number" required>
+        </div>
+      </div>
+      <div class="row full">
+        <div class="field">
+          <label for="address">Address <span class="req">*</span></label>
+          <input type="text" id="address" name="address" required>
+        </div>
+      </div>
+      <div class="row three">
+        <div class="field">
+          <label for="city">City <span class="req">*</span></label>
+          <input type="text" id="city" name="city" required>
+        </div>
+        <div class="field">
+          <label for="state">State <span class="req">*</span></label>
+          <input type="text" id="state" name="state" required>
+        </div>
+        <div class="field">
+          <label for="pincode">Pincode <span class="req">*</span></label>
+          <input type="text" id="pincode" name="pincode" maxlength="10" required>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Academic Details</legend>
+      <div class="row">
+        <div class="field">
+          <label for="course">Course <span class="req">*</span></label>
+          <input type="text" id="course" name="course" placeholder="e.g. B.Tech Computer Science" required>
+        </div>
+        <div class="field">
+          <label for="department">Department <span class="req">*</span></label>
+          <input type="text" id="department" name="department" placeholder="e.g. CSE, ECE, MCA" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="admission_date">Admission Date <span class="req">*</span></label>
+          <input type="date" id="admission_date" name="admission_date" required>
+        </div>
+        <div class="field">
+          <label for="current_year">Current Year <span class="req">*</span></label>
+          <select id="current_year" name="current_year" required>
+            <option value="">Select year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+            <option value="5">5th Year</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Guardian Details</legend>
+      <div class="row three">
+        <div class="field">
+          <label for="guardian_name">Guardian Name <span class="req">*</span></label>
+          <input type="text" id="guardian_name" name="guardian_name" required>
+        </div>
+        <div class="field">
+          <label for="guardian_relation">Relation <span class="req">*</span></label>
+          <input type="text" id="guardian_relation" name="guardian_relation" placeholder="e.g. Father, Mother" required>
+        </div>
+        <div class="field">
+          <label for="guardian_phone">Guardian Phone <span class="req">*</span></label>
+          <input type="tel" id="guardian_phone" name="guardian_phone" maxlength="10" placeholder="10-digit number" required>
+        </div>
+      </div>
+    </fieldset>
+
+    <p class="error-text" id="formError"></p>
+    <button type="submit" id="submitBtn">Submit Details</button>
+  </form>
+</div>
+
+<script>
+  // Point this at your deployed FastAPI backend.
+  // Local development: "http://localhost:8000"
+  // After deploying to Railway: replace with your Railway URL, e.g.
+  // "https://your-app-name.up.railway.app"
+  const API_BASE = "https://web-production-992a0.up.railway.app";
+
+  const form = document.getElementById("studentForm");
+  const banner = document.getElementById("banner");
+  const formError = document.getElementById("formError");
+  const submitBtn = document.getElementById("submitBtn");
+
+  function showBanner(message, type){
+    banner.textContent = message;
+    banner.className = "banner show " + type;
+  }
+
+  function clearBanner(){
+    banner.className = "banner";
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearBanner();
+    formError.classList.remove("show");
+
+    const payload = {
+      roll_number: document.getElementById("roll_number").value.trim(),
+      full_name: document.getElementById("full_name").value.trim(),
+      date_of_birth: document.getElementById("date_of_birth").value,
+      gender: document.getElementById("gender").value,
+      blood_group: document.getElementById("blood_group").value || null,
+      nationality: document.getElementById("nationality").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      address: document.getElementById("address").value.trim(),
+      city: document.getElementById("city").value.trim(),
+      state: document.getElementById("state").value.trim(),
+      pincode: document.getElementById("pincode").value.trim(),
+      course: document.getElementById("course").value.trim(),
+      department: document.getElementById("department").value.trim(),
+      admission_date: document.getElementById("admission_date").value,
+      current_year: parseInt(document.getElementById("current_year").value, 10),
+      guardian_name: document.getElementById("guardian_name").value.trim(),
+      guardian_relation: document.getElementById("guardian_relation").value.trim(),
+      guardian_phone: document.getElementById("guardian_phone").value.trim(),
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting…";
+
+    try{
+      const res = await fetch(`${API_BASE}/students`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if(!res.ok){
+        const detail = Array.isArray(data.detail)
+          ? data.detail.map(d => d.msg).join(", ")
+          : (data.detail || "Submission failed");
+        throw new Error(detail);
+      }
+
+      showBanner(`Student details submitted! Record ID: #${data.id}`, "success");
+      form.reset();
+      document.getElementById("nationality").value = "Indian";
+    }catch(err){
+      showBanner(err.message || "Could not reach the server. Check that the backend is running.", "error");
+    }finally{
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Details";
+    }
+  });
+</script>
+
+</body>
+</html>
